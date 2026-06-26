@@ -1,0 +1,34 @@
+# Bu papkada ko'p loyiha bor — git faqat eSCORE deploy fayllarini kuzatadi.
+# Avval HAMMANI e'tiborsiz qoldiramiz...
+/*
+
+# ...keyin faqat kerakli loyihalarni qaytaramiz:
+!/escore/
+!/sofascore-api/
+!/render.yaml
+!/.gitignore
+!/DEPLOY.md
+
+# escore / sofascore-api ichidagi build, kesh va vaqtinchalik fayllar:
+escore/node_modules/
+escore/dist/
+escore/server/node_modules/
+escore/server/db/archive.json
+escore/server/run*.log
+escore/server/*.err.log
+escore/server/server.log
+sofascore-api/__pycache__/
+sofascore-api/app/__pycache__/
+sofascore-api/app/routers/__pycache__/
+sofascore-api/.venv/
+sofascore-api/*.log
+
+# Muhit o'zgaruvchilari
+.env
+**/.env
+.env.local
+**/.env.local
+
+# OS / muharrir
+.DS_Store
+Thumbs.db

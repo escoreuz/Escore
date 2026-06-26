@@ -1,0 +1,48 @@
+# Render Blueprint — eSCORE saytini 3 servisda joylashtirish.
+# Render dashboard → "New +" → "Blueprint" → repozitoriyni ulang → bu fayl avtomatik o'qiladi.
+services:
+  # 1) FastAPI — SofaScore proksisi (Python, curl_cffi anti-bot)
+  - type: web
+    name: escore-api
+    runtime: python
+    rootDir: sofascore-api
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+
+  # 2) Node backend (Express) — frontend shu yerga murojaat qiladi
+  - type: web
+    name: escore-backend
+    runtime: node
+    rootDir: escore/server
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+    healthCheckPath: /api/health
+    envVars:
+      # FastAPI manzili avtomatik ulanadi (faqat hostname; kod https:// qo'shadi)
+      - key: SCORE_API
+        fromService:
+          name: escore-api
+          type: web
+          property: host
+
+  # 3) Frontend (Vite/React statik) — DOMEN SHU SERVISGA ULANADI
+  - type: web
+    name: escore-web
+    runtime: static
+    rootDir: escore
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      # Node backend manzili build paytida o'rnatiladi (faqat hostname; kod https:// qo'shadi)
+      - key: VITE_API_URL
+        fromService:
+          name: escore-backend
+          type: web
+          property: host
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN

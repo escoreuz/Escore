@@ -42,6 +42,14 @@ services:
       # REAL rejim (SofaScore). "0" — faqat lokal DEMO uchun, production'da ishlatilmaydi
       - key: USE_REAL
         value: "1"
+      # Ma'lumot manbai: apisports (rasmiy API-Football) | sofascore (zaxira, hozir 403 bilan bloklangan)
+      - key: DATA_PROVIDER
+        value: apisports
+      - key: APISPORTS_BASE_URL
+        value: https://v3.football.api-sports.io
+      # API-Football kaliti — SECRET: qiymat bu faylga YOZILMAYDI, Render dashboard → Environment da kiritiladi
+      - key: APISPORTS_KEY
+        sync: false
       # FastAPI manzili (to'liq URL — fromService faqat nom berib qo'yadi, shuning uchun qo'lda)
       - key: SCORE_API
         value: https://escore-api.onrender.com

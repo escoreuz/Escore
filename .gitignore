@@ -8,12 +8,15 @@
 !/render.yaml
 !/.gitignore
 !/DEPLOY.md
+!/README.md
 
 # escore / sofascore-api ichidagi build, kesh va vaqtinchalik fayllar:
 escore/node_modules/
 escore/dist/
 escore/server/node_modules/
 escore/server/db/archive.json
+escore/server/db/apisports-cache.json
+escore/server/db/*.tmp-*
 escore/server/run*.log
 escore/server/*.err.log
 escore/server/server.log

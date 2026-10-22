@@ -44,10 +44,19 @@ upstream bilan ishlash `sofa/**` da, fayl saqlash `store.js`/`archive.js` da.
 cd escore/server
 npm install
 cp .env.example .env            # qiymatlarni to'ldiring (secret git'ga tushmaydi)
-node --env-file=.env index.js   # yoki: npm start (env shell'dan), npm run dev (--watch)
+npm start                       # .env bo'lsa avtomatik o'qiladi (--env-file-if-exists); npm run dev (--watch)
 ```
 
-- REAL rejim (default) uchun FastAPI (`sofascore-api`) `SCORE_API` manzilida ishlab turishi kerak.
+- Ma'lumot provayderi `DATA_PROVIDER` bilan tanlanadi:
+  - `sofascore` (default, orqaga moslik) — FastAPI (`sofascore-api`) `SCORE_API` manzilida ishlab turishi kerak.
+  - `apisports` — rasmiy API-Football (api-sports.io v3). `APISPORTS_KEY` majburiy (yo'q bo'lsa server ishga tushmaydi).
+    Free tarif: kuniga 100, daqiqasiga 10 so'rov. Adapter (`apisports.js`, `apisports/*`) kvotani himoya qiladi:
+    disk + xotira kesh (`<ESCORE_DATA_DIR>/apisports-cache.json`, qayta ishga tushganda tiklanadi), TTL
+    (bugungi o'yinlar 10 daq / jonli 3 daq, o'tgan sana 24 soat, kelajak 1 soat, tugagan o'yin tafsiloti 7 kun,
+    jadval/bombardirlar 6 soat, jamoa/o'yinchi/murabbiy 24 soat, davlat/liga 7 kun), in-flight dedupe, ≤ 8 so'rov/daq,
+    kunlik qoldiq ≤ 10 bo'lsa faqat kesh (`meta.stale: true`, ro'yxatlarda `partial: true`), 429 → bugun uchun to'xtash.
+    API'da yo'q imkoniyatlar: yangiliklar (bosh sahifa store maqolalariga tushadi), maqola, hakam sahifasi, FIFA/UEFA
+    reytingi (404), o'yinchi atributlari/heatmap/oylik reyting, momentum, bashorat (`vote: null`).
 - FastAPI'siz lokal ishlab chiqish: `USE_REAL=0` — DEMO rejim (uydirma ma'lumot, faqat lokal).
 - Frontend backendni `VITE_API_URL` dan oladi (dev default `http://localhost:4500`). `escore/` ildizidan ikki terminal:
 
@@ -70,7 +79,10 @@ To'liq izohli namuna: `.env.example`.
 | `ALLOWED_ORIGINS` | `http://localhost:5190` | CORS, vergul bilan (`http/security.js`) |
 | `SITE_URL` | `http://localhost:5190` | sitemap/share havolalari; http(s) bo'lmasa ishga tushmaydi (`http/security.js`) |
 | `ADMIN_TOKEN` | — | yozish endpointlari; yo'q yoki < 16 belgi → yozish o'chiq (`http/routes/content.js`) |
-| `ESCORE_DATA_DIR` | `server/db` | news.json / archive.json papkasi (`store.js`, `archive.js`) |
+| `ESCORE_DATA_DIR` | `server/db` | news.json / archive.json / apisports-cache.json papkasi (`store.js`, `archive.js`, `apisports.js`) |
+| `DATA_PROVIDER` | `sofascore` | `sofascore` \| `apisports` (`index.js`); boshqa qiymat — ishga tushmaydi |
+| `APISPORTS_KEY` | — | API-Football kaliti (`x-apisports-key` header); faqat muhitda, log/javobda chiqmaydi |
+| `APISPORTS_BASE_URL` | `https://v3.football.api-sports.io` | API-Football manzili, faqat https (`apisports/client.js`) |
 
 ## Endpointlar
 

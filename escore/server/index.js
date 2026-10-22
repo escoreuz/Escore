@@ -15,9 +15,18 @@ const logger = console
 const mode = process.env.USE_REAL === '0' ? 'demo' : 'real'
 const port = Number.parseInt(process.env.PORT ?? '', 10) || DEFAULT_PORT
 
+// Ma'lumot provayderi: DATA_PROVIDER = sofascore (default, orqaga moslik) | apisports (API-Football).
+const PROVIDERS = new Set(['sofascore', 'apisports'])
+const provider = (process.env.DATA_PROVIDER || 'sofascore').trim().toLowerCase()
+if (!PROVIDERS.has(provider)) throw new Error(`DATA_PROVIDER noto'g'ri: sofascore | apisports bo'lishi kerak`)
+// Kalit qiymati hech qachon chiqarilmaydi — faqat bor/yo'qligi tekshiriladi
+if (mode === 'real' && provider === 'apisports' && !process.env.APISPORTS_KEY?.trim()) {
+  throw new Error("DATA_PROVIDER=apisports, lekin APISPORTS_KEY o'rnatilmagan (server/.env yoki muhit)")
+}
+
 // Demo adapter faqat demo rejimda yuklanadi — real rejimda demo kod umuman ishlamaydi
 async function loadSofa() {
-  if (mode === 'real') return import('./sofascore.js')
+  if (mode === 'real') return provider === 'apisports' ? import('./apisports.js') : import('./sofascore.js')
   const { createDemoAdapter } = await import('./demo/adapter.js')
   const adapter = createDemoAdapter()
   adapter.start()
@@ -26,7 +35,9 @@ async function loadSofa() {
 
 const sofa = await loadSofa()
 const app = createApp({ sofa, store, archive, mode, logger })
-const server = app.listen(port, () => logger.info(`eSCORE API (${mode}) → http://localhost:${port}`))
+const server = app.listen(port, () =>
+  logger.info(`eSCORE API (${mode}, ${mode === 'real' ? provider : 'demo'}) → http://localhost:${port}`),
+)
 server.requestTimeout = REQUEST_TIMEOUT_MS
 server.headersTimeout = HEADERS_TIMEOUT_MS
 server.keepAliveTimeout = KEEP_ALIVE_TIMEOUT_MS

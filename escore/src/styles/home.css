@@ -1,0 +1,383 @@
+/* ===== Bosh sahifa: bosh maqola, ikkinchi darajali, iqtibos, ustunlar, yon qutilar ===== */
+
+/* ---------- Lead ---------- */
+.lead__title {
+  font-family: var(--serif-display);
+  font-weight: 900;
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.02;
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.lead__standfirst {
+  font-family: var(--serif-body);
+  font-style: italic;
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.lead__figure {
+  margin: 0 0 18px;
+}
+.lead__photo {
+  position: relative;
+  display: block;
+  height: 300px;
+  background: linear-gradient(135deg, #2f3b30, #46251f), var(--ink);
+  background-blend-mode: multiply;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  filter: grayscale(0.35) contrast(1.05);
+  text-decoration: none;
+  cursor: pointer;
+}
+.lead__photo-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.42) 1px, transparent 1.4px);
+  background-size: 4px 4px;
+  opacity: 0.5;
+}
+.lead__photo::after {
+  content: '⚽';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 130px;
+  opacity: 0.16;
+}
+.lead__photo:has(img)::after {
+  content: none; /* rasm bo'lsa ⚽ placeholderni yashiramiz */
+}
+@supports not selector(:has(*)) {
+  .lead__photo::after {
+    content: none;
+  }
+}
+.lead__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.lead__photo:hover .lead__img {
+  transform: scale(1.04);
+}
+.lead__photo-tag {
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  right: 8px;
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  letter-spacing: 0.14em;
+  background: rgba(0, 0, 0, 0.72);
+  color: #fff;
+  padding: 3px 7px;
+}
+.lead__figure figcaption {
+  font-family: var(--cond);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  padding-top: 6px;
+  border-bottom: 1px solid var(--line-soft);
+  padding-bottom: 6px;
+}
+/* Ikki ustunli matn: justify + hyphens:auto o'zbek tilida notekis "daryolar" hosil qiladi */
+.lead__body {
+  column-count: 2;
+  column-gap: 28px;
+  column-rule: 1px solid var(--line-soft);
+  font-size: 16px;
+  line-height: 1.6;
+  text-align: left;
+  hyphens: manual;
+}
+.lead__body p {
+  margin: 0 0 12px;
+}
+.lead__continue {
+  margin-top: 8px;
+}
+.dropcap::first-letter {
+  font-family: var(--serif-display);
+  font-weight: 900;
+  font-size: 64px;
+  line-height: 0.8;
+  float: left;
+  padding: 6px 10px 0 0;
+  color: var(--accent);
+}
+
+.article__link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.article__link:hover {
+  color: var(--accent);
+}
+
+/* ---------- Secondary ---------- */
+.secondary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.secondary__item {
+  border-top: 3px solid var(--line);
+  padding-top: 10px;
+}
+.secondary__item h3 {
+  font-family: var(--serif-display);
+  font-weight: 800;
+  font-size: 21px;
+  line-height: 1.12;
+  margin: 0 0 8px;
+}
+.secondary__item p {
+  font-size: 14.5px;
+  line-height: 1.55;
+  margin: 0 0 8px;
+  text-align: left;
+}
+.secondary__media {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin-bottom: 9px;
+  background: #0d0d0d;
+  border: 1px solid var(--line-soft);
+}
+.secondary__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+.secondary__media:hover img {
+  transform: scale(1.05);
+}
+
+/* ---------- Pullquote ---------- */
+.pullquote {
+  margin: 0;
+  text-align: center;
+  padding: 12px 30px;
+  position: relative;
+}
+.pullquote__mark {
+  font-family: var(--serif-display);
+  font-size: 80px;
+  color: var(--accent);
+  line-height: 0.2;
+  display: block;
+  height: 40px;
+}
+.pullquote p {
+  font-family: var(--serif-display);
+  font-style: italic;
+  font-weight: 700;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.25;
+  margin: 0 0 10px;
+}
+.pullquote cite {
+  font-family: var(--cond);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---------- Columns ---------- */
+.columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+}
+.columns__item {
+  padding-top: 8px;
+}
+.columns__item h3 {
+  font-family: var(--serif-display);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+.columns__item p {
+  font-size: 14px;
+  line-height: 1.55;
+  text-align: left;
+  margin: 0 0 8px;
+}
+.columns__author {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+/* ---------- Standings ---------- */
+.standings {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--cond);
+  font-size: 13px;
+}
+.standings th {
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--fs-min);
+  letter-spacing: 0.06em;
+  padding: 6px 4px;
+  border-bottom: 2px solid var(--line);
+  color: var(--ink-soft);
+}
+.standings td {
+  text-align: center;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.standings__club {
+  text-align: left !important;
+  font-weight: 500;
+}
+.standings__pos {
+  font-weight: 700;
+}
+.standings__pts {
+  font-weight: 700;
+  color: var(--accent);
+}
+.standings tr.is-top .standings__pos {
+  color: var(--positive);
+  position: relative;
+}
+.standings tr.is-top .standings__pos::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 4px;
+  bottom: 4px;
+  width: 3px;
+  background: var(--zone-cl);
+}
+
+/* ---------- Results ---------- */
+.results {
+  list-style: none;
+  margin: 0;
+  padding: 6px 12px 10px;
+}
+.results__row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--line-soft);
+  font-family: var(--cond);
+  font-size: 14px;
+}
+.results__row:last-child {
+  border-bottom: 0;
+}
+.results__team--h {
+  text-align: right;
+}
+.results__team--a {
+  text-align: left;
+}
+.results__score {
+  font-weight: 700;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 8px;
+  letter-spacing: 0.05em;
+}
+.results__score i {
+  font-style: normal;
+  opacity: 0.6; /* paper@0.6 ink ustida: 6.29:1 */
+  margin: 0 1px;
+}
+
+/* ---------- Fixtures ---------- */
+.fixtures {
+  list-style: none;
+  margin: 0;
+  padding: 6px 12px 10px;
+}
+.fixtures__row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px dotted var(--line-soft);
+  font-family: var(--cond);
+}
+.fixtures__row:last-child {
+  border-bottom: 0;
+}
+.fixtures__time {
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 14px;
+  min-width: 46px;
+}
+.fixtures__match {
+  font-size: 14px;
+}
+
+/* ---------- Briefs ---------- */
+.box--briefs {
+  background: var(--paper);
+}
+.briefs {
+  list-style: none;
+  margin: 0;
+  padding: 10px 12px;
+}
+.briefs li {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.briefs li:last-child {
+  border-bottom: 0;
+}
+.briefs__bullet {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+:root[data-theme='dark'] .secondary__media {
+  border-color: var(--line-soft);
+}
+
+@media (max-width: 920px) {
+  .secondary,
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .lead__body {
+    column-count: 1;
+  }
+}

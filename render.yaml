@@ -1,7 +1,13 @@
 # Render Blueprint — eSCORE saytini 3 servisda joylashtirish.
 # Render dashboard → "New +" → "Blueprint" → repozitoriyni ulang → bu fayl avtomatik o'qiladi.
+# Batafsil qo'llanma va deploydan keyingi tekshiruv ro'yxati: DEPLOY.md.
+# Secret qiymatlar bu faylga YOZILMAYDI (ADMIN_TOKEN Render tomonidan generateValue bilan yaratiladi).
+#
+# Domen ulangach almashtiriladigan joylar (hammasi bir xil domen):
+#   escore-backend → ALLOWED_ORIGINS, SITE_URL
+#   escore-web     → VITE_SITE_URL (qayta build kerak), CSP connect-src (agar backend domeni o'zgarsa)
 services:
-  # 1) FastAPI — SofaScore proksisi (Python, curl_cffi anti-bot)
+  # 1) FastAPI — SofaScore proksisi (Python, curl_cffi)
   - type: web
     name: escore-api
     runtime: python
@@ -10,8 +16,13 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
+    envVars:
+      # requirements.txt pinlanmagan (fastapi/uvicorn/curl_cffi) — Python versiyasini qat'iy belgilaymiz
+      - key: PYTHON_VERSION
+        value: 3.12.8
 
-  # 2) Node backend (Express) — frontend shu yerga murojaat qiladi
+  # 2) Node backend (Express) — frontend shu yerga murojaat qiladi.
+  # Faqat Render proksisi ortida ishlaydi: rate limit `trust proxy 1` (X-Forwarded-For) ga tayanadi.
   - type: web
     name: escore-backend
     runtime: node
@@ -21,9 +32,41 @@ services:
     startCommand: node index.js
     healthCheckPath: /api/health
     envVars:
+      # Node 24 (Active LTS, lokal v24.16 bilan bir xil). Minimal: runtime 18+ (helmet 8, findLast).
+      # Server testlari Node 22 va 24 da tekshirilgan (170/170)
+      - key: NODE_VERSION
+        value: "24"
+      # production: so'rov logida faqat 5xx yoziladi
+      - key: NODE_ENV
+        value: production
+      # REAL rejim (SofaScore). "0" — faqat lokal DEMO uchun, production'da ishlatilmaydi
+      - key: USE_REAL
+        value: "1"
       # FastAPI manzili (to'liq URL — fromService faqat nom berib qo'yadi, shuning uchun qo'lda)
       - key: SCORE_API
         value: https://escore-api.onrender.com
+      # CORS: frontend originlari (vergul bilan, oxirida `/` siz).
+      # Domen ulangach qo'shing: https://escore-web.onrender.com,https://sizningdomen.uz,https://www.sizningdomen.uz
+      - key: ALLOWED_ORIGINS
+        value: https://escore-web.onrender.com
+      # Sitemap va /share/news/:slug havolalari uchun sayt manzili (domen ulangach almashtiring)
+      - key: SITE_URL
+        value: https://escore-web.onrender.com
+      # POST/PUT/DELETE /api/news uchun Bearer token. Render tasodifiy qiymat yaratadi (≥16 belgi);
+      # qiymatni faqat Render dashboard → Environment dan oling, hech qayerga yozmang.
+      - key: ADMIN_TOKEN
+        generateValue: true
+      # SofaScore proksisiga so'rov timeouti (ms, 1..60000). Default 10000 — ixtiyoriy.
+      # - key: SOFA_TIMEOUT_MS
+      #   value: "10000"
+      # Doimiy disk ulansa (Render Disk, pullik) news.json/archive.json shu papkada saqlanadi.
+      # Diskni ulamasdan yoqmang — default `server/db` (vaqtinchalik disk, qayta deployda nollanadi).
+      # - key: ESCORE_DATA_DIR
+      #   value: /var/data
+    # disk:
+    #   name: escore-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
 
   # 3) Frontend (Vite/React statik) — DOMEN SHU SERVISGA ULANADI
   - type: web
@@ -33,10 +76,59 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     envVars:
-      # Node backend manzili build paytida o'rnatiladi (to'liq URL — qo'lda)
+      # Build uchun Node (Vite) — backend bilan bir xil versiya
+      - key: NODE_VERSION
+        value: "24"
+      # Node backend manzili build paytida bundlega yoziladi (to'liq URL — qo'lda)
       - key: VITE_API_URL
         value: https://escore-backend.onrender.com
+      # canonical / og:url uchun sayt manzili (domen ulangach almashtiring va qayta build qiling)
+      - key: VITE_SITE_URL
+        value: https://escore-web.onrender.com
+    # Render: mavjud fayl har doim qoidadan ustun; qolganlarida YUQORIDAN birinchi mos qoida qo'llanadi.
+    # Shuning uchun aniq yo'llar `/*` dan OLDIN turadi.
+    routes:
+      # Sitemap va Telegram/Facebook preview sahifalari backendda yaratiladi (tashqi URL ga rewrite)
+      - type: rewrite
+        source: /sitemap.xml
+        destination: https://escore-backend.onrender.com/sitemap.xml
+      - type: rewrite
+        source: /share/*
+        destination: https://escore-backend.onrender.com/share/*
+      # SPA fallback (History API routing): /news/..., /match/... → index.html. MAJBURIY.
+      - type: rewrite
+        source: /*
+        destination: /index.html
     headers:
       - path: /*
         name: X-Frame-Options
         value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=()
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000
+      # CSP: index.html dagi tashqi resurslar — faqat Google Fonts (CSS + shrift fayllari).
+      # Inline script yo'q (Vite build `<script type="module" src>`); JSON-LD `application/ld+json`
+      # bajarilmaydigan ma'lumot bloki — script-src ga ta'sir qilmaydi. Rasmlar backend /api/img va https.
+      # connect-src: VITE_API_URL bilan bir xil bo'lishi SHART (backend domeni o'zgarsa shu yerda ham).
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://escore-backend.onrender.com; manifest-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+      # Kesh: xeshli build assetlari — uzoq muddat; HTML — har safar qayta tekshirish
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+      - path: /
+        name: Cache-Control
+        value: no-cache

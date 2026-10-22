@@ -1,52 +1,84 @@
+// UEFA / FIFA reyting sahifasi. Noma'lum `kind` → 404 sahifa (serverga so'rov yuborilmaydi).
 import { api, useApi } from '../api.js'
-import { Loading, ErrorBox } from './States.jsx'
+import { Link } from '../lib/nav.jsx'
+import { useSeo } from '../lib/seo.js'
+import NotFound from './NotFound.jsx'
+import { Empty, ErrorBox, Loading } from './States.jsx'
+import { dash } from './player/display.js'
 
-function navigate(hash) {
-  window.location.hash = hash
-  window.scrollTo(0, 0)
+const KINDS = {
+  uefa: { title: 'UEFA reytingi', sub: 'Yevropa assotsiatsiyalari koeffitsiyenti.' },
+  fifa: { title: 'FIFA reytingi', sub: 'Jahon terma jamoalari reytingi.' },
+}
+const TOP_COUNT = 3
+
+export const isKnownKind = kind => typeof kind === 'string' && Object.hasOwn(KINDS, kind)
+
+function RankingsTable({ rows, title }) {
+  return (
+    <div className="table-scroll" role="region" aria-label={title} tabIndex={0}>
+      <table className="rk-table">
+        <caption className="sr-only">{title}: o'rin, jamoa va ochko</caption>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col" className="rk-name">
+              Jamoa
+            </th>
+            <th scope="col">Ochko</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r, i) => (
+            <tr
+              key={`${r.rank ?? ''}-${r.teamId ?? r.name}-${i}`}
+              className={r.rank != null && r.rank <= TOP_COUNT ? 'rk-top' : undefined}
+            >
+              <td className="rk-pos">{dash(r.rank)}</td>
+              <td className="rk-name">
+                {r.teamId != null ? (
+                  <Link to={`/team/${encodeURIComponent(r.teamId)}`}>{dash(r.name)}</Link>
+                ) : (
+                  dash(r.name)
+                )}
+              </td>
+              <td className="rk-pts">{dash(r.points)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
-export default function Rankings({ kind }) {
-  const { data, loading, error } = useApi(() => api.rankings(kind), [kind])
+function RankingsBody({ state, title }) {
+  const { data, loading, error, reload } = state
   if (loading) return <Loading />
-  if (error) return <ErrorBox message={error} />
+  if (error) return <ErrorBox error={error} onRetry={reload} title="Reytingni yuklab bo'lmadi" />
+  const rows = Array.isArray(data?.rows) ? data.rows.filter(Boolean) : []
+  if (!rows.length) return <Empty>Reyting ma'lumoti hozircha yo'q.</Empty>
+  return <RankingsTable rows={rows} title={title} />
+}
 
-  const rows = data?.rows || []
-  const isUefa = kind === 'uefa'
-  const title = isUefa ? 'UEFA reytingi' : 'FIFA reytingi'
-  const sub = isUefa
-    ? 'Yevropa assotsiatsiyalari koeffitsiyenti.'
-    : 'Jahon terma jamoalari reytingi.'
-
+function RankingsPage({ kind }) {
+  const { title, sub } = KINDS[kind]
+  const state = useApi(o => api.rankings(kind, o), [kind])
+  useSeo({ title, description: `${title} — ${sub}`, path: `/rankings/${kind}` })
   return (
     <section className="nw rk">
-      <a href="#/score" onClick={(e) => { e.preventDefault(); navigate('/score') }} className="article__back">
+      <Link to="/score" className="article__back">
         ← Score
-      </a>
+      </Link>
       <header className="nw-head">
         <p className="kicker">REYTING</p>
         <h1 className="score__title">{title}</h1>
         <p className="score__standfirst">{sub}</p>
       </header>
-
-      <table className="rk-table">
-        <thead>
-          <tr><th>#</th><th className="rk-name">Jamoa</th><th>Ochko</th></tr>
-        </thead>
-        <tbody>
-          {rows.map((r) => (
-            <tr key={r.rank} className={r.rank <= 3 ? 'rk-top' : ''}>
-              <td className="rk-pos">{r.rank}</td>
-              <td className="rk-name">
-                {r.teamId
-                  ? <a href={`#/team/${r.teamId}`} onClick={(e) => { e.preventDefault(); navigate(`/team/${r.teamId}`) }}>{r.name}</a>
-                  : r.name}
-              </td>
-              <td className="rk-pts">{r.points}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <RankingsBody state={state} title={title} />
     </section>
   )
+}
+
+export default function Rankings({ kind }) {
+  return isKnownKind(kind) ? <RankingsPage kind={kind} /> : <NotFound />
 }

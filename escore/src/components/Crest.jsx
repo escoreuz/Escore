@@ -1,30 +1,43 @@
 import { useState } from 'react'
 import { api } from '../api.js'
+import { initials } from '../lib/format.js'
+import { readableTextColor } from '../lib/color.js'
 
-function initials(name) {
-  const p = (name || '').trim().split(/\s+/)
-  return (p.length > 1 ? p.slice(0, 2).map((x) => x[0]).join('') : (name || '').slice(0, 3)).toUpperCase()
+// Rasmning tabiiy o'lchami (px) — styles.css dagi .sc-badge o'lchamlariga mos (CLS oldini olish uchun)
+const SIZE_PX = { lg: 46, sm: 20, md: 22 }
+const IMG_STYLE = {
+  position: 'absolute',
+  inset: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  background: '#fff',
 }
 
 // Logo/rasmli badge. id bo'lsa rasm yuklanadi; xato bo'lsa rangli initsiallarga qaytadi.
+// Dekorativ: yonida doim nom matni bo'ladi, shuning uchun ekran o'quvchidan yashiriladi.
 // kind: 'team' | 'player' | 'manager' | 'referee' | 'tournament'
 export default function Crest({ name, c = '#444', id, kind = 'team', size }) {
-  const [err, setErr] = useState(false)
-  const cls = `sc-badge${size === 'lg' ? ' sc-badge--lg' : size === 'sm' ? ' sc-badge--sm' : ''}`
-  const showImg = id && !err
+  const [failedSrc, setFailedSrc] = useState(null)
+  const sizeKey = size === 'lg' || size === 'sm' ? size : 'md'
+  const cls = `sc-badge${sizeKey === 'md' ? '' : ` sc-badge--${sizeKey}`}`
+  const src = id ? api.img(kind, id) : null
+  const px = SIZE_PX[sizeKey]
+  // Jamoa rangi fon bo'lganda initsiallar WCAG AA kontrast bilan (qora/oq); tanilmagan rangda CSS rangi qoladi
+  const style = { background: c, color: readableTextColor(c) ?? undefined, position: 'relative', overflow: 'hidden' }
   return (
-    <span className={cls} style={{ background: c, position: 'relative', overflow: 'hidden' }}>
+    <span className={cls} style={style} aria-hidden="true">
       {initials(name)}
-      {showImg && (
+      {src && src !== failedSrc && (
         <img
-          src={api.img(kind, id)}
+          src={src}
           alt=""
+          width={px}
+          height={px}
           loading="lazy"
-          onError={() => setErr(true)}
-          style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%',
-            objectFit: 'contain', background: '#fff',
-          }}
+          decoding="async"
+          onError={() => setFailedSrc(src)}
+          style={IMG_STYLE}
         />
       )}
     </span>

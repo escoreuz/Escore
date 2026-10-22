@@ -1,49 +1,80 @@
-import { useState, useEffect } from 'react'
+// Score chap paneli: mahkamlangan ligalar, reytinglar, davlatlar → ligalar.
+import { memo, useMemo } from 'react'
 import { api, useApi } from '../api.js'
-import { getPins, isPinned, togglePin, unpin } from '../pins.js'
-
-function navigate(hash) {
-  window.location.hash = hash
-  window.scrollTo(0, 0)
-}
-
-const leagueLogo = (id) => api.img('tournament', id)
+import { Link } from '../lib/nav.jsx'
+import { unpin, usePins } from '../pins.js'
+import CountryRow from './score/CountryRow.jsx'
+import { BoxStatus } from './score/SideBoxes.jsx'
 
 // Liga logosi (yuklanmasa — yashiriladi)
 function LeagueLogo({ id }) {
+  const src = api.img('tournament', id)
+  if (!src) return null
   return (
     <img
       className="sc-league__logo"
-      src={leagueLogo(id)}
+      src={src}
       alt=""
       loading="lazy"
-      onError={(e) => { e.target.style.visibility = 'hidden' }}
+      onError={e => {
+        e.currentTarget.style.visibility = 'hidden'
+      }}
     />
   )
 }
 
-// ---- Mahkamlangan ligalar ----
 function PinnedLeagues() {
-  const [pins, setPins] = useState(getPins())
-  useEffect(() => {
-    const on = () => setPins([...getPins()])
-    window.addEventListener('escore-pins', on)
-    return () => window.removeEventListener('escore-pins', on)
-  }, [])
-
+  const pins = usePins()
   return (
     <div className="box">
-      <h4 className="box__title">MAHKAMLANGAN LIGALAR</h4>
+      <h2 className="box__title">MAHKAMLANGAN LIGALAR</h2>
       <ul className="sc-leagues">
         {pins.length === 0 ? (
-          <li className="sc-favnote">Davlatlar bo'limidan liga mahkamlang 📌</li>
-        ) : pins.map((l) => (
-          <li key={l.id} className="sc-pinrow">
-            <button className="sc-league" onClick={() => navigate(`/league/${l.id}`)} title="Liga sahifasi">
-              <LeagueLogo id={l.id} />
-              <span className="sc-league__name">{l.name}</span>
-            </button>
-            <button className="sc-pin is-on" title="Olib tashlash" onClick={() => unpin(l.id)}>📌</button>
+          <li className="sc-favnote">Davlatlar bo'limidan liga mahkamlang</li>
+        ) : (
+          pins.map(l => (
+            <li key={l.id} className="sc-pinrow">
+              <Link className="sc-league" to={`/league/${encodeURIComponent(l.id)}`}>
+                <LeagueLogo id={l.id} />
+                <span className="sc-league__name">{l.name}</span>
+              </Link>
+              <button
+                type="button"
+                className="sc-pin is-on"
+                aria-label={`${l.name}: mahkamlashni olib tashlash`}
+                onClick={() => unpin(l.id)}
+              >
+                <span aria-hidden="true">📌</span>
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
+    </div>
+  )
+}
+
+const RANKINGS = [
+  { kind: 'fifa', icon: '🌐', label: 'FIFA reytingi' },
+  { kind: 'uefa', icon: '⭐', label: 'UEFA reytingi' },
+]
+
+function Rankings() {
+  return (
+    <div className="box">
+      <h2 className="box__title">REYTINGLAR</h2>
+      <ul className="sc-leagues">
+        {RANKINGS.map(r => (
+          <li key={r.kind}>
+            <Link className="sc-league" to={`/rankings/${r.kind}`}>
+              <span className="sc-rank-ic" aria-hidden="true">
+                {r.icon}
+              </span>
+              <span className="sc-league__name">{r.label}</span>
+              <span className="sc-league__arrow" aria-hidden="true">
+                ›
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
@@ -51,106 +82,28 @@ function PinnedLeagues() {
   )
 }
 
-// ---- Reytinglar ----
-function Rankings() {
+function Countries() {
+  const { data, error, loading, reload } = useApi(o => api.countries(o), [])
+  const list = Array.isArray(data?.countries) ? data.countries : []
+  const pins = usePins()
+  const pinnedIds = useMemo(() => new Set(pins.map(p => String(p.id))), [pins])
   return (
     <div className="box">
-      <h4 className="box__title">REYTINGLAR</h4>
-      <ul className="sc-leagues">
-        <li>
-          <button className="sc-league" onClick={() => navigate('/rankings/fifa')}>
-            <span className="sc-rank-ic">🌐</span>
-            <span className="sc-league__name">FIFA reytingi</span>
-            <span className="sc-league__arrow">›</span>
-          </button>
-        </li>
-        <li>
-          <button className="sc-league" onClick={() => navigate('/rankings/uefa')}>
-            <span className="sc-rank-ic">⭐</span>
-            <span className="sc-league__name">UEFA reytingi</span>
-            <span className="sc-league__arrow">›</span>
-          </button>
-        </li>
-      </ul>
-    </div>
-  )
-}
-
-// ---- Bitta davlat (kengayadi → ligalari) ----
-function CountryRow({ country }) {
-  const [open, setOpen] = useState(false)
-  const [leagues, setLeagues] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [, force] = useState(0)
-
-  useEffect(() => {
-    const on = () => force((x) => x + 1) // pin holati o'zgarsa qayta chizamiz
-    window.addEventListener('escore-pins', on)
-    return () => window.removeEventListener('escore-pins', on)
-  }, [])
-
-  const toggle = () => {
-    const next = !open
-    setOpen(next)
-    if (next && leagues === null) {
-      setLoading(true)
-      api.countryLeagues(country.id)
-        .then((r) => { setLeagues(r.leagues || []); setLoading(false) })
-        .catch(() => { setLeagues([]); setLoading(false) })
-    }
-  }
-
-  return (
-    <li className="sc-country">
-      <button className={`sc-country__head${open ? ' is-open' : ''}`} onClick={toggle}>
-        <span className="sc-country__name">{country.name}</span>
-        <span className="sc-country__arrow">{open ? '▾' : '▸'}</span>
-      </button>
-      {open && (
-        <ul className="sc-country__leagues">
-          {loading ? (
-            <li className="sc-favnote">Yuklanmoqda…</li>
-          ) : (leagues || []).length === 0 ? (
-            <li className="sc-favnote">Liga topilmadi.</li>
-          ) : leagues.map((l) => (
-            <li key={l.id} className="sc-pinrow">
-              <button className="sc-clg" onClick={() => navigate(`/league/${l.id}`)} title="Liga sahifasi">
-                {l.name}
-              </button>
-              <button
-                className={`sc-pin${isPinned(l.id) ? ' is-on' : ''}`}
-                title={isPinned(l.id) ? 'Olib tashlash' : 'Mahkamlash'}
-                onClick={() => togglePin(l)}
-              >
-                📌
-              </button>
-            </li>
+      <h2 className="box__title">DAVLATLAR</h2>
+      <BoxStatus loading={loading} error={error} onRetry={reload} />
+      {!loading && !error && (
+        <ul className="sc-countries">
+          {list.map(c => (
+            <CountryRow key={c.id} country={c} pinnedIds={pinnedIds} />
           ))}
         </ul>
       )}
-    </li>
-  )
-}
-
-// ---- Davlatlar ro'yxati ----
-function Countries() {
-  const { data, loading } = useApi(() => api.countries(), [])
-  const list = data?.countries || []
-  return (
-    <div className="box">
-      <h4 className="box__title">DAVLATLAR</h4>
-      {loading ? (
-        <p className="sc-favnote">Yuklanmoqda…</p>
-      ) : (
-        <ul className="sc-countries">
-          {list.map((c) => <CountryRow key={c.id} country={c} />)}
-        </ul>
-      )}
     </div>
   )
 }
 
-export default function ScoreSidebar() {
+// Score har polling'da qayta chiziladi — panelning o'z ma'lumoti bor, props yo'q
+function ScoreSidebar() {
   return (
     <>
       <PinnedLeagues />
@@ -159,3 +112,5 @@ export default function ScoreSidebar() {
     </>
   )
 }
+
+export default memo(ScoreSidebar)

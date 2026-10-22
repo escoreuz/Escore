@@ -1,0 +1,241 @@
+/* ===== Murabbiy, hakam va reyting sahifalari ===== */
+
+/* ---------- Coach ---------- */
+.co {
+  padding-top: 8px;
+}
+.co-overview {
+  max-width: 640px;
+}
+.co-record {
+  margin-bottom: 18px;
+}
+.co-bar {
+  display: flex;
+  height: 30px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.co-bar__seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  min-width: 22px;
+}
+.co-bar__seg.is-w {
+  background: var(--accent-2);
+}
+.co-bar__seg.is-d {
+  background: var(--line-soft);
+  color: var(--ink);
+}
+.co-bar__seg.is-l {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+.co-bar__labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--fs-min);
+  color: var(--ink-soft);
+  padding-top: 6px;
+}
+.co-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+.co-kpi {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  text-align: center;
+  padding: 14px 8px;
+}
+.co-kpi__num {
+  display: block;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--accent);
+}
+.co-kpi__cap {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: var(--fs-min);
+  color: var(--ink-soft);
+}
+
+/* Karera jadvallari (murabbiy + hakam) */
+.co-career,
+.rf-career {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--cond);
+  font-size: 14px;
+}
+.co-career th,
+.rf-career th {
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  padding: 8px 6px;
+  border-bottom: 2px solid var(--line);
+}
+.co-career td,
+.rf-career td {
+  text-align: center;
+  padding: 9px 6px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.co-career .lg-table__club {
+  text-align: left;
+}
+.co-career tr.co-cur {
+  background: rgba(138, 28, 28, 0.06);
+}
+.co-career tr.co-cur .lg-club__name {
+  font-weight: 700;
+}
+
+/* ---------- Referee ---------- */
+.rf {
+  padding-top: 8px;
+}
+.rf-whistle {
+  font-size: 30px;
+  background: var(--ink) !important; /* Crest/PersonHero inline rangini bosib o'tadi */
+  color: var(--gold-on-ink);
+}
+.rf-overview {
+  max-width: 680px;
+}
+.rf-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.rf-kpi {
+  border: 1px solid var(--line);
+  background: var(--paper-2);
+  text-align: center;
+  padding: 14px 6px;
+}
+.rf-kpi--y {
+  background: #fff7df;
+  border-color: #e0c873;
+}
+.rf-kpi--r {
+  background: #fbe8e6;
+  border-color: #e0a59c;
+}
+.rf-kpi__num {
+  display: block;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--ink);
+}
+.rf-kpi--r .rf-kpi__num {
+  color: var(--accent);
+}
+.rf-kpi__cap {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: var(--fs-min);
+  color: var(--ink-soft);
+}
+/* Tungi mavzu: och sariq/pushti fonlar och matn bilan 1.2–2.9:1 edi */
+:root[data-theme='dark'] .rf-kpi--y {
+  background: #2b2414;
+  border-color: #6b5a24;
+}
+:root[data-theme='dark'] .rf-kpi--r {
+  background: #2d1714;
+  border-color: #6b2f28;
+}
+.rf-career__comp {
+  text-align: left !important;
+}
+.rf-flag {
+  font-size: 15px;
+}
+.rf-yel {
+  display: inline-block;
+  background: #f1d65a;
+  color: #1a1714; /* doimiy qora: tungi --ink och rangda 1.13:1 edi */
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+/* ---------- Reyting sahifasi ---------- */
+.rk {
+  max-width: 720px;
+}
+.rk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--cond);
+  margin-top: 8px;
+}
+.rk-table th {
+  text-align: left;
+  font-size: var(--fs-min);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--line);
+  padding: 8px 10px;
+}
+.rk-table td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 14px;
+}
+.rk-table th:last-child,
+td.rk-pts {
+  text-align: right;
+}
+.rk-pos {
+  width: 40px;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+.rk-name {
+  font-family: var(--serif-body);
+}
+.rk-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.rk-name a:hover {
+  color: var(--accent);
+}
+.rk-pts {
+  font-weight: 700;
+  color: var(--accent);
+}
+.rk-top .rk-pos {
+  color: var(--accent);
+}
+
+@media (max-width: 560px) {
+  .rf-kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

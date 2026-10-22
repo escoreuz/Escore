@@ -1,0 +1,123 @@
+/* ===== Liga: mavsum tanlagich va bosqich chizig'i ===== */
+/* Mavsum tanlagich (gazeta uslubi) */
+.lg-seasons {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 4px 8px;
+  margin: 14px 0 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.lg-seasons::-webkit-scrollbar {
+  height: 5px;
+}
+.lg-seasons::-webkit-scrollbar-thumb {
+  background: var(--line-soft);
+}
+.lg-season {
+  flex: 0 0 auto;
+  min-height: var(--tap-small);
+  font-family: var(--cond);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 5px 13px;
+  cursor: pointer;
+  color: var(--ink-soft);
+  background: var(--paper-2);
+  border: 1px solid var(--line-soft);
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.lg-season:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.lg-season.is-sel,
+.lg-season[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+/* Bosqich chizig'i */
+.lg-stages {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 16px 0 8px;
+  padding: 18px 10px 6px;
+  border-bottom: 3px double var(--line);
+}
+.lg-stages__line {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  top: 24px;
+  height: 2px;
+  background: var(--line-soft);
+  z-index: 0;
+}
+.lg-stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.lg-stage__dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 2px solid var(--line-soft);
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.lg-stage__name {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+.lg-stage.is-done .lg-stage__dot {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.lg-stage.is-done .lg-stage__name {
+  color: var(--ink);
+}
+.lg-stage.is-now .lg-stage__dot,
+.lg-stage[aria-current] .lg-stage__dot {
+  background: var(--accent);
+  border-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  box-shadow: 0 0 0 4px rgba(138, 28, 28, 0.22);
+}
+.lg-stage.is-now .lg-stage__name,
+.lg-stage[aria-current] .lg-stage__name {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  /* 375px reflow: bosqich nomlari o'raladi */
+  .lg-stage__name {
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: anywhere;
+    letter-spacing: 0.02em;
+  }
+  .lg-season {
+    min-height: var(--tap-min);
+  }
+}

@@ -1,0 +1,51 @@
+/* ===== Dizayn tokenlari: yorug' (gazeta qog'ozi) va tungi mavzu =====
+   Kontrast (WCAG 2.2, nisbiy yorqinlik formulasi) docs/FIX-PLAN.md §3.4 bo'yicha tekshirilgan:
+   --muted        matn/ikonka uchun: paper-2 fonida ≥ 4.5:1 (yorug' 4.98, tungi 4.96)
+   --line-soft    FAQAT chiziq/ramka/fon uchun (matn sifatida ishlatmang: 1.8:1)
+   --accent-fill  oq matnli to'ldirilgan fon (yorug' 9.28, tungi 6.03)
+   --gold-on-ink  qora (ink) fondagi tilla matn (yorug' 9.28, tungi 5.66) */
+:root {
+  --ink: #1a1714;
+  --ink-soft: #3a352f;
+  --muted: #6b6152;
+  --paper: #f4efe4;
+  --paper-2: #efe8d9;
+  --line: #2a2521;
+  --line-soft: #b8ad97;
+  --accent: #8a1c1c; /* gazeta qizili */
+  --accent-fill: #8a1c1c;
+  --on-accent: #fff;
+  --accent-2: #1f5130; /* CL zonasi yashili (fon/chiziq) */
+  --zone-cl: #1f5130; /* CL zona indikatori: paper 8.04, paper-2 7.56 */
+  --field-border: #2a2521; /* input chegarasi: paper 13.22 */
+  --positive: #1f5130; /* yashil matn: yorug' paper 8.04 */
+  --gold: #9a7b2e;
+  --gold-on-ink: #e6b34d;
+  --result-win: #237347;
+  --result-draw: #6b665e;
+  --result-loss: #c0392b;
+  --serif-display: 'Playfair Display', Georgia, serif;
+  --serif-body: 'Spectral', 'Source Serif 4', Georgia, serif;
+  --cond: 'Oswald', 'Arial Narrow', sans-serif;
+  --fs-min: 0.6875rem; /* 11px — eng kichik o'qiladigan matn */
+  --focus-ring: 3px;
+  --tap-min: 44px; /* asosiy teginish nishoni (WCAG 2.5.5) */
+  --tap-small: 32px; /* ikkinchi darajali tugmalar (WCAG 2.5.8 ≥ 24px) */
+}
+
+:root[data-theme='dark'] {
+  --ink: #e9e3d7;
+  --ink-soft: #a89e8c;
+  --muted: #948a78;
+  --paper: #17130f;
+  --paper-2: #211c16;
+  --line: #4c453a;
+  --line-soft: #39322a;
+  --accent: #e0645b; /* matn sifatida: paper 5.41, paper-2 4.94 */
+  --accent-fill: #b3362f;
+  --zone-cl: #4f9a6a; /* tungi paper 5.42, paper-2 4.96 (avval accent-2: 2.00) */
+  --field-border: #948a78; /* tungi paper 5.43, paper-2 4.96 (avval --line: 1.95) */
+  --positive: #5fae7a; /* tungi paper 6.88, paper-2 6.30 (avval #1f5130: 2.00) */
+  --gold: #c8a24a;
+  --gold-on-ink: #705210; /* tungi mavzuda --ink och rang */
+}

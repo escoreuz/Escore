@@ -1,0 +1,251 @@
+/* ===== O'yinchi: 12 oylik grafik, mavsum xulosasi, sahifa joylashuvi, reklama, o'yinlar ro'yxati ===== */
+.pl-monthly {
+  margin: 22px 0;
+}
+.pl-bars {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+  height: 132px;
+  padding-top: 6px;
+}
+.pl-bar {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.pl-bar__track {
+  width: 100%;
+  max-width: 30px;
+  height: 90px;
+  display: flex;
+  align-items: flex-end;
+}
+.pl-bar__fill {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease;
+}
+.pl-bar__val {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-top: 5px;
+}
+.pl-bar__mon {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  text-transform: uppercase;
+  color: var(--muted); /* avval ink-soft@0.7 (4.48 / tungi 4.02) */
+}
+
+/* O'yinchi radar (info jadvali olib tashlangach — markazda, ixcham) */
+.pl-radarbox--solo {
+  max-width: 280px;
+  margin: 0 auto 4px;
+}
+
+/* Sahifa: 2-ustun tana + o'ng reklama paneli */
+.pl-wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: start;
+}
+.pl-main {
+  min-width: 0;
+}
+.pl-grid2 {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.82fr) 1.6fr;
+  gap: 22px;
+  align-items: start;
+}
+.pl-side,
+.pl-tabsarea {
+  min-width: 0;
+}
+.pl-side .pl-radarbox--solo {
+  max-width: none;
+  margin: 0 0 16px;
+}
+.pl-side .pl-monthly {
+  margin: 0 0 16px;
+}
+.pl-side .pl-sw {
+  margin-top: 0;
+}
+
+/* Reklama paneli */
+.ad-rail {
+  position: sticky;
+  top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.ad-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed var(--line-soft);
+  background: var(--paper-2);
+  color: var(--ink-soft);
+  text-align: center;
+  padding: 14px;
+}
+.ad-slot__tag {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ad-slot__hint {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  color: var(--muted); /* avval ink-soft@0.6 (3.36 / tungi 3.17) */
+}
+.ad-slot--filled {
+  padding: 0;
+  border-style: solid;
+  overflow: hidden;
+}
+.ad-slot__img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Boyitilgan o'yinlar ro'yxati */
+.plm {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.plm-row {
+  display: grid;
+  grid-template-columns: 22px 50px 1fr 28px 26px 38px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.plm-row.is-linkrow {
+  cursor: pointer;
+}
+.plm-row.is-linkrow:hover {
+  background: var(--paper-2);
+}
+.plm-comp {
+  display: flex;
+  justify-content: center;
+  font-size: 14px;
+}
+.plm-date {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.35;
+}
+.plm-date i {
+  display: block;
+  font-style: normal;
+}
+.plm-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.plm-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--cond);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.plm-score {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-family: var(--cond);
+  text-align: center;
+}
+.plm-score b {
+  font-size: 13px;
+}
+.plm-score i {
+  font-style: normal;
+  color: var(--muted);
+}
+.plm-res {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  font-weight: 700;
+  color: #fff;
+  margin: 0 auto;
+}
+.plm-res.is-G {
+  background: var(--result-win); /* avval #2e8b57: 4.25 → 5.81 */
+}
+.plm-res.is-D {
+  background: var(--result-draw); /* avval #8a857c: 3.67 → 5.70 */
+}
+.plm-res.is-M {
+  background: var(--result-loss); /* 5.44 */
+}
+.plm-res.is-x {
+  background: transparent;
+}
+.plm-rating {
+  font-family: var(--cond);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 3px 0;
+  border-radius: 3px;
+  color: var(--muted);
+}
+
+@media (max-width: 1080px) {
+  .pl-wrap {
+    grid-template-columns: 1fr;
+  }
+  .ad-rail {
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .ad-rail .ad-slot {
+    flex: 1 1 280px;
+    min-height: 140px !important;
+  }
+}
+@media (max-width: 760px) {
+  .pl-grid2 {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .plm-team {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}

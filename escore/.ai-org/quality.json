@@ -1,0 +1,15 @@
+{
+  "timeout_seconds": 600,
+  "checks": [
+    { "name": "format", "command": ["npm.cmd", "run", "format:check"] },
+    { "name": "lint", "command": ["npm.cmd", "run", "lint"] },
+    {
+      "name": "types",
+      "not_applicable": true,
+      "reason": "Loyiha oddiy JS/JSX (TypeScript yo'q); tip/aniqlanmagan nom xatolari ESLint (no-undef, react-hooks) gate'ida tekshiriladi",
+      "approved_by": "AI direktor (2026-10-15) — ega tasdig'i kutilmoqda"
+    },
+    { "name": "tests", "command": ["npm.cmd", "test"] },
+    { "name": "build", "command": ["npm.cmd", "run", "build"] }
+  ]
+}

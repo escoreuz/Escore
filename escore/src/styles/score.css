@@ -1,0 +1,218 @@
+/* ===== Livescore sahifasi: sarlavha, sanalar, asboblar, o'yin bloklari va qatorlari ===== */
+.score {
+  padding-top: 8px;
+}
+.score__head {
+  text-align: center;
+  border-bottom: 3px double var(--line);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+.score__head .kicker {
+  color: var(--accent);
+}
+.score__title {
+  font-family: var(--serif-display);
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.04;
+  margin: 4px 0 10px;
+  letter-spacing: -0.01em;
+}
+.score__standfirst {
+  font-family: var(--serif-body);
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Jonli yangilanish / xato qatori (FIX-PLAN §3.4) — telegraf lentasi uslubida */
+.sc-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 0 0 14px;
+  padding: 6px 10px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px dotted var(--line-soft);
+  font-family: var(--cond);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.sc-status.is-error,
+.sc-status[role='alert'] {
+  color: var(--accent);
+  border-top-color: var(--accent);
+}
+/* Holat qatoridagi ixcham "Qayta urinish" */
+.sc-status .state__retry {
+  min-height: var(--tap-small);
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: var(--fs-min);
+  letter-spacing: 0.12em;
+}
+/* O'yin qatoridagi daqiqa katagi */
+.sc-row__status {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Sana tasmasi */
+.sc-days {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+  overflow-x: auto;
+}
+.sc-day {
+  flex: 1 0 auto;
+  min-width: 92px;
+  min-height: var(--tap-min);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 0;
+  border-right: 1px solid var(--line-soft);
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: var(--cond);
+  transition: background 0.15s;
+}
+.sc-day:last-child {
+  border-right: 0;
+}
+.sc-day:hover {
+  background: var(--paper);
+}
+.sc-day.is-sel,
+.sc-day[aria-pressed='true'],
+.sc-day[aria-current='date'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.sc-day__dow {
+  font-size: var(--fs-min);
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+.sc-day__d {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+.sc-day__label {
+  font-size: var(--fs-min);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* Asboblar paneli */
+.sc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.sc-tabs {
+  display: flex;
+  border: 1px solid var(--line);
+}
+.sc-tab {
+  position: relative;
+  min-height: var(--tap-small);
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--paper-2);
+  border: 0;
+  border-right: 1px solid var(--line-soft);
+  padding: 7px 16px;
+  cursor: pointer;
+  color: var(--ink);
+  transition: background 0.15s;
+}
+.sc-tab:last-child {
+  border-right: 0;
+}
+.sc-tab:hover {
+  background: var(--paper);
+}
+.sc-tab.is-sel,
+.sc-tab[aria-selected='true'],
+.sc-tab[aria-pressed='true'] {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+.sc-tab__badge {
+  display: inline-block;
+  margin-left: 6px;
+  background: #fff;
+  color: var(--accent-fill);
+  border-radius: 9px;
+  padding: 0 6px;
+  font-size: var(--fs-min);
+  font-weight: 700;
+}
+.sc-toolbar__right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sc-search {
+  border: 1px solid var(--field-border);
+  background: var(--paper);
+  font-family: var(--cond);
+  font-size: 13px;
+  padding: 6px 10px;
+  min-height: var(--tap-small);
+  width: 180px;
+  color: var(--ink);
+}
+.sc-search::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .sc-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sc-toolbar__right {
+    justify-content: space-between;
+  }
+  .sc-search {
+    width: 100%;
+    flex: 1;
+    min-height: var(--tap-min);
+  }
+  .sc-tabs {
+    width: 100%;
+  }
+  .sc-tab {
+    flex: 1;
+    padding: 7px 8px;
+    min-height: var(--tap-min);
+  }
+}

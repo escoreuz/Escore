@@ -1,0 +1,210 @@
+/* ===== Foydalanish imkoniyati: yordamchi klasslar, fokus, harakatni kamaytirish =====
+   Bu fayl komponent fayllaridan KEYIN import qilinadi (bir xil aniqlikda ustun turishi uchun). */
+
+/* ---------- Yordamchi klasslar (FIX-PLAN §3.4) ---------- */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* "Asosiy matnga o'tish" — fokusda gazeta tamg'asi kabi chiqadi */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1000;
+  padding: 12px 18px;
+  font-family: var(--cond);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: var(--ink);
+  border: 2px solid var(--paper);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: none;
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Programmatik fokus (sahifa almashganda) — kontur ko'rsatilmaydi */
+#main:focus {
+  outline: none;
+}
+
+/* Bosiladigan qator: ichidagi bitta .stretched-link butun qatorni qoplaydi.
+   Eslatma: .stretched-link o'zi position berilgan element bo'lmasligi kerak. */
+.is-linkrow {
+  position: relative;
+}
+/* Nol aniqlik (:where) — komponent klasslari (masalan .lg-match__score rangi) ustun qoladi */
+:where(.stretched-link) {
+  color: inherit;
+  text-decoration: none;
+}
+.stretched-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1; /* Crest kabi position:relative bezak elementlar qoplam OSTIDA qoladi */
+}
+/* Qator ichidagi boshqa interaktiv elementlar (sevimli yulduz, pin) qoplamdan ustun */
+.is-linkrow :is(a, button, input, select, textarea, summary, [tabindex]):not(.stretched-link) {
+  position: relative;
+  z-index: 2;
+}
+/* Fokus halqasi butun qator atrofida */
+.stretched-link:focus-visible {
+  outline: none;
+}
+.stretched-link:focus-visible::after {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: -3px;
+}
+
+/* Keng jadvallar: gorizontal aylantiriladigan, klaviatura bilan fokuslanadigan region */
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.table-scroll > table {
+  margin: 0;
+}
+/* Ko'p ustunli karera jadvallari torayib ketmasin — kerak bo'lsa region aylantiriladi */
+.table-scroll > :is(.co-career, .rf-career, .plc) {
+  min-width: 480px;
+}
+
+/* ---------- Fokus (WCAG 2.4.7 / 2.4.11 / 2.4.13) ---------- */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 2px;
+}
+/* Qora (ink) fonli joylarda halqa qog'oz rangida */
+:is(.ticker, .sc-block__head, .foot__grid, .box__title, .mp-sheet__head) :focus-visible,
+:is(.ticker, .sc-block__head, .foot__grid, .box__title, .mp-sheet__head) .stretched-link:focus-visible::after,
+.skip-link:focus-visible {
+  outline-color: var(--paper);
+}
+/* overflow:hidden/auto konteynerlar ichida halqa kesilmasin — ichkariga chiziladi */
+:is(.ticker, .sc-days, .lg-seasons, .pls-tl__row, .sc-countries, .table-scroll) :focus-visible {
+  outline-offset: -4px;
+}
+/* Ichkariga chizilganda qora fonli tanlangan element ustida qog'oz rangi */
+.sc-day:is(.is-sel, [aria-pressed='true'], [aria-current='date']):focus-visible,
+.lg-season:is(.is-sel, [aria-pressed='true']):focus-visible {
+  outline-color: var(--paper);
+}
+.table-scroll:focus-visible {
+  outline-offset: 2px;
+}
+/* Matn maydonlari: avvalgi outline:none o'rniga aniq holat */
+.search__input:focus-visible {
+  outline-offset: -4px;
+}
+.search:focus-within {
+  border-color: var(--accent);
+}
+.sc-search:focus-visible,
+.arch-search:focus-visible,
+.settings__select:focus-visible {
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+
+/* ---------- Harakatni kamaytirish (WCAG 2.2.2 / 2.3.3) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Ticker to'xtaydi va matn o'raladi; nusxa (aria-hidden) elementlar yashiriladi */
+  .ticker__track {
+    animation: none !important;
+    transform: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 28px;
+    white-space: normal;
+    padding: 9px 12px;
+  }
+  .ticker__item[aria-hidden='true'] {
+    display: none;
+  }
+  .sc-min--live::after,
+  .state__logo {
+    animation: none !important;
+  }
+  /* Hover transform/rotate o'chadi */
+  .settings__btn:hover,
+  .lead__photo:hover .lead__img,
+  .secondary__media:hover img,
+  .nw-card__media:hover .nw-card__img,
+  .nw-card:hover .nw-card__img {
+    transform: none !important;
+  }
+}
+
+/* ---------- Yuqori kontrast rejimi (Windows forced-colors) ---------- */
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible,
+  .stretched-link:focus-visible::after {
+    outline-color: Highlight !important;
+  }
+  /* !important: komponent qoidalari (yuqori aniqlik) va inline style ranglarini bosib o'tish uchun */
+  /* Tanlangan holat faqat fon rangi bilan berilgan joylar tizim ranglarida ham ajralsin */
+  .is-sel,
+  .is-on,
+  [aria-pressed='true'],
+  [aria-selected='true'],
+  [aria-current='page'],
+  [aria-current='true'],
+  [aria-current='date'] {
+    forced-color-adjust: none;
+    background: Highlight !important;
+    color: HighlightText !important;
+    border-color: Highlight !important;
+  }
+  /* Rangli indikatorlar (zona chiziqlari, bosqich nuqtalari, statistika/ovoz ustunlari) yo'qolmasin */
+  .standings tr.is-top .standings__pos::before,
+  .lg-stage__dot,
+  .mp-stat__fill,
+  .mp-vote__seg {
+    forced-color-adjust: none;
+    background: CanvasText !important;
+    border-color: CanvasText !important;
+  }
+  .mp-vote__seg {
+    color: Canvas !important;
+  }
+  .lg-stage.is-now .lg-stage__dot {
+    background: Highlight !important;
+    border-color: Highlight !important;
+  }
+  /* Kelajak bosqichlar: bo'sh doira */
+  .lg-stage:not(.is-done):not(.is-now) .lg-stage__dot {
+    background: Canvas !important;
+  }
+  /* Highlight fonli tanlangan element ustida halqa ko'rinsin */
+  :is(.is-sel, .is-on, [aria-pressed='true'], [aria-selected='true'], [aria-current]):focus-visible {
+    outline-color: HighlightText !important;
+  }
+}

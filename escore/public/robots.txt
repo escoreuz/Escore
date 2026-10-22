@@ -1,0 +1,10 @@
+# eSCORE — qidiruv robotlari uchun qoidalar
+User-agent: *
+Allow: /
+Disallow: /search/
+Disallow: /api/
+
+# Sitemap backend tomonidan beriladi (GET /sitemap.xml, SITE_URL env) va escore-web orqali
+# /sitemap.xml ga rewrite qilinadi (render.yaml). robots.txt standarti faqat TO'LIQ URL ni qabul qiladi.
+# Hozircha Render manzili; domen ulangach https://sizningdomen.uz/sitemap.xml ga almashtiring (DEPLOY.md, "Domen ulangach").
+Sitemap: https://escore-web.onrender.com/sitemap.xml

@@ -1,0 +1,281 @@
+/* ===== Liga sahifasi: sarlavha, jadval, forma, o'yinlar, mavsumlar, bosqichlar ===== */
+.lg {
+  padding-top: 8px;
+}
+.lg-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 3px double var(--line);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+.lg-hero__flag {
+  font-size: 56px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.lg-hero .kicker {
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.lg-hero__name {
+  font-family: var(--serif-display);
+  font-weight: 900;
+  font-size: clamp(28px, 5vw, 46px);
+  line-height: 1.02;
+  margin: 0 0 4px;
+  letter-spacing: -0.01em;
+}
+.lg-hero__sub {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+/* Split tabs (Hammasi/Uyda/Mehmonda) */
+.lg-split {
+  display: flex;
+  border: 1px solid var(--line);
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 14px;
+}
+.lg-split__btn {
+  min-height: var(--tap-small);
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--paper-2);
+  border: 0;
+  border-right: 1px solid var(--line-soft);
+  padding: 6px 16px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.lg-split__btn:last-child {
+  border-right: 0;
+}
+.lg-split__btn:hover {
+  background: var(--paper);
+}
+.lg-split__btn.is-sel,
+.lg-split__btn[aria-pressed='true'],
+.lg-split__btn[aria-selected='true'] {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+
+/* League table */
+.lg-table,
+.lg-scorers {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--cond);
+  font-size: 13px;
+}
+.lg-table thead th,
+.lg-scorers thead th {
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  padding: 7px 4px;
+  border-bottom: 2px solid var(--line);
+}
+.lg-table td,
+.lg-scorers td,
+.lg-table tbody th,
+.lg-scorers tbody th {
+  text-align: center;
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+/* Qator sarlavhasi (klub / o'yinchi katagi) — ko'rinishda oddiy katak */
+.lg-table tbody th,
+.lg-scorers tbody th {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: normal;
+  color: var(--ink);
+}
+/* td jadval katagi bo'lib qoladi (display:flex EMAS) — flex ichki o'ramda */
+.lg-table__club {
+  text-align: left !important;
+}
+.lg-club__inner,
+.lg-club__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.lg-scorers .lg-club__inner,
+.lg-table .lg-club__inner {
+  justify-content: flex-start;
+  text-align: left;
+}
+.lg-club__link {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s;
+}
+.lg-club__link:hover .lg-club__name {
+  color: var(--accent);
+}
+.lg-club__name {
+  font-size: 14px;
+  white-space: nowrap;
+}
+.lg-pos {
+  font-weight: 700;
+  position: relative;
+  width: 28px;
+}
+.lg-pts {
+  font-weight: 700;
+  color: var(--accent);
+}
+.lg-gd-pos {
+  color: var(--positive);
+}
+.lg-gd-neg {
+  color: var(--accent);
+}
+
+.lg-forms {
+  display: inline-flex;
+  gap: 3px;
+}
+.lg-form {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: var(--fs-min);
+  font-weight: 700;
+}
+.lg-form.is-w {
+  background: var(--accent-2);
+}
+.lg-form.is-d {
+  background: var(--line-soft);
+  color: var(--ink);
+}
+.lg-form.is-l {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+
+/* League matches (MatchRow) */
+.lg-mday {
+  margin-bottom: 16px;
+}
+.lg-match {
+  display: grid;
+  grid-template-columns: 50px 1fr 56px 1fr;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: var(--tap-min);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line-soft);
+  border-top: 0;
+  padding: 9px 12px;
+  cursor: pointer;
+  font-family: var(--serif-body);
+  text-align: left;
+  text-decoration: none;
+  transition: background 0.12s;
+}
+.lg-mday .lg-match:first-of-type {
+  border-top: 1px solid var(--line-soft);
+}
+.lg-match:hover {
+  background: var(--paper-2);
+}
+/* O'yin sahifasi havolasi yo'q qator: bosilmaydi */
+.lg-match.is-static {
+  cursor: default;
+}
+.lg-match.is-static:hover {
+  background: var(--paper);
+}
+.lg-match__status {
+  font-family: var(--cond);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.lg-match__status.is-live {
+  color: var(--accent);
+}
+.lg-match__team {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  min-width: 0;
+}
+.lg-match__team--a {
+  justify-content: flex-end;
+  text-align: right;
+}
+.lg-match__score {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 0;
+}
+
+/* Turnir guruhlari (Jahon chempionati jadvali) */
+.lg-group {
+  margin-bottom: 22px;
+}
+.lg-group__name {
+  font-family: var(--cond);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  background: var(--accent-fill);
+  display: inline-block;
+  padding: 4px 14px;
+  margin: 0 0 8px;
+}
+
+@media (max-width: 560px) {
+  .lg-hide-sm {
+    display: none;
+  }
+  .lg-hero__flag {
+    font-size: 42px;
+  }
+  .lg-match {
+    grid-template-columns: 40px 1fr 48px 1fr;
+  }
+  /* 375px reflow: uzun nomlar o'raladi, sahifa gorizontal suzmaydi */
+  .lg-club__name {
+    font-size: 13px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .lg-split__btn {
+    min-height: var(--tap-min);
+  }
+}

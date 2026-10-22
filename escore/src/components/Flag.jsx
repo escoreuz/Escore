@@ -4,9 +4,23 @@ import globusUrl from '../assets/globus.svg'
 
 const GLOBES = new Set(['🌍', '🌎', '🌏'])
 
-export default function Flag({ value }) {
+// label (mamlakat nomi) berilsa bayroq (emoji yoki globus rasmi) ekran o'quvchiga shu nom bilan o'qiladi,
+// aks holda dekorativ.
+export default function Flag({ value, label }) {
+  if (!value) return null
   if (GLOBES.has(value)) {
-    return <img className="flag-globe" src={globusUrl} alt="" aria-hidden="true" />
+    return label ? (
+      <img className="flag-globe" src={globusUrl} alt={label} />
+    ) : (
+      <img className="flag-globe" src={globusUrl} alt="" aria-hidden="true" />
+    )
   }
-  return <>{value}</>
+  if (label) {
+    return (
+      <span role="img" aria-label={label}>
+        {value}
+      </span>
+    )
+  }
+  return <span aria-hidden="true">{value}</span>
 }

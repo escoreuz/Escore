@@ -1,0 +1,90 @@
+/* ===== Ticker ("So'nggi daqiqa" lentasi) va pauza tugmasi ===== */
+/* ---------- Ticker ---------- */
+.ticker {
+  display: flex;
+  align-items: stretch;
+  margin: 14px 0 6px;
+  border: 1px solid var(--line);
+  background: var(--ink);
+  color: var(--paper);
+  overflow: hidden;
+}
+.ticker__label {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+  font-family: var(--cond);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ticker__viewport {
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+.ticker__track {
+  display: inline-flex;
+  gap: 48px;
+  white-space: nowrap;
+  padding: 9px 0;
+  animation: ticker 38s linear infinite;
+}
+.ticker__item {
+  font-family: var(--cond);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+/* Pauza: tugma (is-paused), sichqoncha ustida yoki ichidagi element fokusda */
+.ticker.is-paused .ticker__track,
+.ticker:hover .ticker__track,
+.ticker:focus-within .ticker__track {
+  animation-play-state: paused;
+}
+/* Pauza tugmasi — gazeta "stop-press" tamg'asi uslubida */
+.ticker__pause {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: var(--tap-min);
+  min-height: var(--tap-min);
+  padding: 0 12px;
+  border: 0;
+  border-left: 1px solid rgba(244, 239, 228, 0.35);
+  background: transparent;
+  color: var(--paper);
+  font-family: var(--cond);
+  font-weight: 600;
+  font-size: var(--fs-min);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s;
+}
+.ticker__pause:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+.ticker.is-paused .ticker__pause {
+  background: var(--accent-fill);
+  color: var(--on-accent);
+}
+@keyframes ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+:root[data-theme='dark'] .ticker__pause {
+  border-left-color: rgba(23, 19, 15, 0.35);
+}

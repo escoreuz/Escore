@@ -1,0 +1,131 @@
+/* ===== O'yin: maydon, tarkiblar, ajratilgan jadval qatori ===== */
+/* Pitch */
+.mp-pitch {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: repeating-linear-gradient(90deg, #1f5130 0 10%, #226135 10% 20%);
+  border: 6px solid #14331f;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+.mp-pitch__line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.6);
+}
+.mp-pitch__circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+}
+.mp-dot {
+  background: #3a352f; /* inline jamoa rangi bo'lmasa zaxira */
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  color: #fff;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Lineup sheets */
+.mp-sheets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.mp-sheet {
+  border: 1px solid var(--line);
+}
+.mp-sheet__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 8px 10px;
+}
+.mp-sheet__name {
+  font-family: var(--serif-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+.mp-sheet__form {
+  margin-left: auto;
+  font-family: var(--cond);
+  font-size: 12px;
+  opacity: 0.8; /* paper@0.8 ink ustida: 10.25:1 */
+}
+.mp-sheet__list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 10px 8px;
+}
+.mp-sheet__list li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--line-soft);
+  font-family: var(--cond);
+}
+.mp-sheet__list li:last-child {
+  border-bottom: 0;
+}
+.mp-sheet__num {
+  width: 22px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+.mp-sheet__pname {
+  font-size: 14px;
+}
+.mp-sheet__pos {
+  margin-left: auto;
+  font-size: var(--fs-min);
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+.mp-sheet__row {
+  cursor: pointer;
+}
+.mp-sheet__row:hover {
+  background: var(--paper-2);
+}
+/* Profil havolasi yo'q o'yinchi qatori: bosilmaydi */
+.mp-sheet__row.is-static {
+  cursor: default;
+}
+.mp-sheet__row.is-static:hover {
+  background: none;
+}
+
+@media (max-width: 560px) {
+  .mp-sheets {
+    grid-template-columns: 1fr;
+  }
+  .mp-dot {
+    width: 24px;
+    height: 24px;
+    font-size: var(--fs-min);
+  }
+}

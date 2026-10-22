@@ -1,0 +1,142 @@
+/* ===== Asos: reset, qog'oz varag'i, umumiy tipografiya va qutilar ===== */
+* {
+  box-sizing: border-box;
+}
+
+/* hidden atributi har qanday display qoidasidan ustun (masalan CountryRow ochiluvchi ro'yxati) */
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at 20% 10%, #2c2823, #1c1916 70%);
+  color: var(--ink);
+  font-family: var(--serif-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Sheet ---------- */
+.paper {
+  padding: 28px 16px 48px;
+}
+.paper__sheet {
+  max-width: 1180px;
+  margin: 0 auto;
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.012) 0 2px, transparent 2px 4px),
+    radial-gradient(circle at 80% 0%, rgba(138, 28, 28, 0.04), transparent 55%);
+  padding: 34px 40px 24px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    0 2px 0 #d9cfb8 inset;
+  border: 1px solid #d8cdb4;
+  position: relative;
+}
+.paper__sheet::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(42, 37, 33, 0.18);
+  pointer-events: none;
+}
+
+.hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 22px 0;
+}
+
+/* ---------- Kicker ---------- */
+.kicker {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 0 0 6px;
+}
+.kicker--sm {
+  font-size: var(--fs-min);
+  letter-spacing: 0.14em;
+}
+
+.readmore {
+  font-family: var(--cond);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.readmore:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Side boxes ---------- */
+.box {
+  border: 1px solid var(--line);
+  margin-bottom: 22px;
+  background: var(--paper-2);
+}
+.box__title {
+  font-family: var(--cond);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 14px;
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--ink);
+  color: var(--paper);
+}
+.box__title--plain {
+  background: transparent;
+  color: var(--ink);
+  border-bottom: 2px solid var(--line);
+  padding: 0 0 6px;
+  margin-bottom: 16px;
+}
+.box__foot {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin: 0;
+  padding: 6px 12px 10px;
+}
+
+/* Globus ikonkasi (🌍 emoji o'rniga) — public/globus.svg rasmi, emoji o'lchamida */
+.flag-globe {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.14em;
+  object-fit: contain;
+}
+
+/* ===== Tungi mavzu: umumiy fon va ramkalar ===== */
+:root[data-theme='dark'],
+:root[data-theme='dark'] body {
+  background: radial-gradient(circle at 20% 10%, #14110e, #0b0a08 70%);
+}
+:root[data-theme='dark'] .paper__sheet::before {
+  border-color: rgba(220, 210, 190, 0.1);
+}
+:root[data-theme='dark'] .flag-globe {
+  filter: invert(1); /* globus qora rangda — tungi rejimda oqartiramiz */
+}
+
+@media (max-width: 560px) {
+  .paper {
+    padding: 10px 6px 30px;
+  }
+  .paper__sheet {
+    padding: 20px 16px;
+  }
+}

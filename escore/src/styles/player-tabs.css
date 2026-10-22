@@ -1,0 +1,231 @@
+/* ===== O'yinchi: karera jadvali va Mavsum tabi (o'yinma-o'yin reyting + heatmap) ===== */
+.plc {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--cond);
+}
+.plc th {
+  text-align: center;
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--line);
+  padding: 7px 4px;
+}
+.plc th.plc-comp,
+.plc td.plc-comp {
+  text-align: left;
+}
+.plc td {
+  text-align: center;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 13px;
+}
+.plc-year {
+  font-weight: 700;
+}
+.plc td.plc-comp {
+  font-family: var(--serif-body);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.plc-rating {
+  display: inline-block;
+  min-width: 38px;
+  padding: 3px 5px;
+  border-radius: 3px;
+  color: var(--muted); /* reyting bo'lsa ratingStyle() inline fon + oq matn beradi */
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.pls-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 12px;
+  border: 1px solid var(--line-soft);
+  background: var(--paper-2);
+  margin-bottom: 16px;
+}
+.pls-avg {
+  margin-left: auto;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+
+.pls-tl {
+  margin-bottom: 22px;
+}
+.pls-tl__row {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 4px 4px 8px;
+}
+.pls-tl__row::-webkit-scrollbar {
+  height: 5px;
+}
+.pls-tl__row::-webkit-scrollbar-thumb {
+  background: var(--line-soft);
+}
+.pls-mtl {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  min-width: var(--tap-min);
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 5px 7px;
+}
+a.pls-mtl {
+  text-decoration: none;
+}
+a.pls-mtl:hover {
+  background: var(--paper-2);
+}
+/* O'yin havolasi yo'q nuqta (span) — bosilmaydi */
+span.pls-mtl {
+  cursor: default;
+}
+.pls-mtl__date {
+  font-family: var(--cond);
+  font-size: var(--fs-min);
+  color: var(--ink-soft);
+}
+.pls-mtl__rt {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 12px;
+  min-width: 34px;
+  text-align: center;
+  padding: 3px 4px;
+  border-radius: 3px;
+  color: var(--muted);
+}
+.pls-mtl__noopp {
+  font-size: 13px;
+  opacity: 0.8; /* bezak ikonka (⚽), avval 0.5 */
+}
+
+.pls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.pls-pitch {
+  position: relative;
+  aspect-ratio: 1.5;
+  background: #6aa84f;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  overflow: hidden;
+  border-radius: 3px;
+}
+.pls-pitch__half {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.pls-pitch__circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 26%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+}
+.pls-pitch__box {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15%;
+  height: 56%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+.pls-pitch__box--l {
+  left: 0;
+  border-left: 0;
+}
+.pls-pitch__box--r {
+  right: 0;
+  border-right: 0;
+}
+/* Heatmap nuqtasi: filter: blur() o'rniga yumshoq radial gradient —
+   o'nlab nuqtada blur telefonlarda sezilarli GPU yuki edi */
+.pls-dot {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 40, 0, 0.7),
+    rgba(255, 120, 0, 0.38) 38%,
+    rgba(255, 180, 0, 0.14) 60%,
+    transparent 74%
+  );
+  pointer-events: none;
+}
+
+/* Mavsum: liga dropdown + statistika ro'yxati */
+.pls-select {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--tap-small);
+  font-family: var(--cond);
+  font-size: 14px;
+  font-weight: 600;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px 2px;
+}
+.pls-select option {
+  background: var(--paper);
+  color: var(--ink);
+}
+.pls-stats {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pls-stats th {
+  text-align: left;
+  font-family: var(--serif-body);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--ink);
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.pls-stats td {
+  text-align: right;
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+@media (max-width: 720px) {
+  .pls-grid {
+    grid-template-columns: 1fr;
+  }
+}

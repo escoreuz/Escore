@@ -1,103 +1,153 @@
+// Saytning o'z (tahririyat) maqolasi: /article/:slug
 import { api, useApi } from '../api.js'
-import { Loading } from './States.jsx'
+import { safeUrl } from '../lib/format.js'
+import { Link } from '../lib/nav.jsx'
+import { siteUrl, useSeo } from '../lib/seo.js'
+import NotFound from './NotFound.jsx'
+import { newsArticleJsonLd } from './news/articleSeo.js'
+import NewsImage from './news/NewsImage.jsx'
+import PageError, { PageLoading } from './news/PageError.jsx'
+import { articlePath, isValidSlug } from './news/paths.js'
+import ShareBar from './news/ShareBar.jsx'
 
-function navigate(hash) {
-  window.location.hash = hash
-  window.scrollTo(0, 0)
+const RELATED_LIMIT = 3
+const HERO_WIDTH = 1200
+const HERO_HEIGHT = 675
+
+function RelatedArticles({ slug }) {
+  const { data, error, loading } = useApi(o => api.news(o), [])
+  if (loading) return null
+  if (error) return <p className="unavailable">O'xshash maqolalarni yuklab bo'lmadi.</p>
+  const related = (Array.isArray(data) ? data : []).filter(a => a?.slug && a.slug !== slug).slice(0, RELATED_LIMIT)
+  if (related.length === 0) return null
+  return (
+    <section className="article__related" aria-labelledby="related-title">
+      <h2 id="related-title" className="box__title box__title--plain">
+        SHUNINGDEK O'QING
+      </h2>
+      <div className="columns">
+        {related.map(a => (
+          <article key={a.slug} className="columns__item">
+            {a.kicker && <p className="kicker kicker--sm">{a.kicker}</p>}
+            <h3>
+              <Link to={articlePath(a.slug)} className="article__link">
+                {a.title || 'Sarlavhasiz maqola'}
+              </Link>
+            </h3>
+            {a.standfirst && <p>{a.standfirst}</p>}
+            <Link to={articlePath(a.slug)} className="readmore" tabIndex={-1} aria-hidden="true">
+              Davomini o'qish →
+            </Link>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
 }
 
-export default function Article({ slug }) {
-  const { data: article, loading } = useApi(() => api.article(slug), [slug])
-  const { data: list } = useApi(() => api.news(), [])
+function ArticleFigure({ article, title }) {
+  const image = safeUrl(article.image)
+  return (
+    <figure className="article__figure">
+      {image ? (
+        // Hero rasm yuklanmasa fallback figure tashqarisiga chiqmasligi uchun bo'sh qoldiriladi
+        <NewsImage
+          src={image}
+          alt={title}
+          className="article__img"
+          fallbackClassName={null}
+          width={HERO_WIDTH}
+          height={HERO_HEIGHT}
+          eager
+        />
+      ) : (
+        <div className="lead__photo" aria-hidden="true">
+          <div className="lead__photo-grid" />
+          {article.photoTag && <span className="lead__photo-tag">{article.photoTag}</span>}
+        </div>
+      )}
+      {article.caption && <figcaption>{article.caption}</figcaption>}
+    </figure>
+  )
+}
 
-  if (loading) return <Loading />
+function Tags({ tags }) {
+  if (!Array.isArray(tags) || tags.length === 0) return null
+  return (
+    <p className="article__tags">
+      <span className="kicker kicker--sm">TEGLAR: </span>
+      {tags.map(t => (
+        <span key={t} className="article__tag">
+          #{t}{' '}
+        </span>
+      ))}
+    </p>
+  )
+}
 
-  if (!article) {
-    return (
-      <div className="article article--missing">
-        <p className="kicker">404</p>
-        <h2 className="lead__title">Maqola topilmadi</h2>
-        <p>Bunday maqola mavjud emas yoki olib tashlangan.</p>
-        <a href="#/" onClick={(e) => { e.preventDefault(); navigate('/') }} className="readmore">← Bosh sahifaga qaytish</a>
-      </div>
-    )
-  }
-
-  const related = (list || []).filter((a) => a.slug !== slug).slice(0, 3)
+function ArticleView({ article, slug }) {
+  const path = articlePath(slug)
+  const title = article.title || 'Maqola'
+  const body = Array.isArray(article.body) ? article.body : []
+  useSeo({
+    title,
+    description: article.standfirst,
+    image: safeUrl(article.image) ?? undefined,
+    path,
+    type: 'article',
+    jsonLd: newsArticleJsonLd({
+      headline: title,
+      description: article.standfirst,
+      image: article.image,
+      date: article.publishedAt ?? article.date,
+      author: article.author,
+      path,
+    }),
+  })
 
   return (
     <article className="article">
-      <a
-        href="#/"
-        onClick={(e) => { e.preventDefault(); navigate('/') }}
-        className="article__back"
-      >
+      <Link to="/" className="article__back">
         ← Bosh sahifa
-      </a>
-
+      </Link>
       <header className="article__head">
-        <p className="kicker">{article.kicker}</p>
-        <h1 className="article__title">{article.title}</h1>
-        <p className="article__standfirst">{article.standfirst}</p>
+        <p className="kicker">{article.kicker ?? '—'}</p>
+        <h1 className="article__title">{title}</h1>
+        {article.standfirst && <p className="article__standfirst">{article.standfirst}</p>}
         <div className="article__meta">
-          <span className="article__author">{article.author}</span>
+          <span className="article__author">{article.author ?? '—'}</span>
           <span className="article__dot">•</span>
-          <span>{article.date}</span>
+          <span>{article.date ?? '—'}</span>
           <span className="article__dot">•</span>
-          <span>{article.readTime}</span>
+          <span>{article.readTime ?? '—'}</span>
         </div>
       </header>
-
-      <figure className="article__figure">
-        <div className="lead__photo">
-          <div className="lead__photo-grid" />
-          <span className="lead__photo-tag">{article.photoTag}</span>
-        </div>
-        <figcaption>{article.caption}</figcaption>
-      </figure>
-
+      <ArticleFigure article={article} title={title} />
       <div className="article__body">
-        {article.body.map((p, i) => (
-          <p key={i} className={i === 0 ? 'dropcap' : ''}>{p}</p>
+        {body.map((p, i) => (
+          <p key={i} className={i === 0 ? 'dropcap' : ''}>
+            {p}
+          </p>
         ))}
       </div>
-
-      <div className="article__share">
-        <span className="article__share-label">ULASHISH:</span>
-        {['Telegram', 'Facebook', 'X', 'Nusxa olish'].map((s) => (
-          <a key={s} href="#" onClick={(e) => e.preventDefault()}>{s}</a>
-        ))}
-      </div>
-
+      <Tags tags={article.tags} />
+      <ShareBar url={siteUrl() + path} title={title} />
       <hr className="hr" />
-
-      <section className="article__related">
-        <h4 className="box__title box__title--plain">SHUNINGDEK O'QING</h4>
-        <div className="columns">
-          {related.map((a) => (
-            <article key={a.slug} className="columns__item">
-              <p className="kicker kicker--sm">{a.kicker}</p>
-              <h3>
-                <a
-                  href={`#/article/${a.slug}`}
-                  onClick={(e) => { e.preventDefault(); navigate(`/article/${a.slug}`) }}
-                  className="article__link"
-                >
-                  {a.title}
-                </a>
-              </h3>
-              <p>{a.standfirst}</p>
-              <a
-                href={`#/article/${a.slug}`}
-                onClick={(e) => { e.preventDefault(); navigate(`/article/${a.slug}`) }}
-                className="readmore"
-              >
-                Davomini o'qish →
-              </a>
-            </article>
-          ))}
-        </div>
-      </section>
+      <RelatedArticles slug={slug} />
     </article>
   )
+}
+
+function ArticleLoader({ slug }) {
+  const { data, error, loading, reload } = useApi(o => api.article(slug, o), [slug])
+  if (loading) return <PageLoading />
+  if (error) return <PageError error={error} onRetry={reload} />
+  if (!data) return <NotFound />
+  return <ArticleView article={data} slug={slug} />
+}
+
+export default function Article({ slug }) {
+  // Yaroqsiz slug — serverga so'rovsiz 404
+  if (!isValidSlug(slug)) return <NotFound />
+  return <ArticleLoader slug={slug} />
 }

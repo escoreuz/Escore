@@ -1,67 +1,110 @@
-import { useState, useEffect } from 'react'
-import { api } from '../api.js'
-import { Loading } from './States.jsx'
+// Maqolalar arxivi: qidiruv, kategoriya filtri va "Yana yuklash" bilan sahifalash
+import { useEffect, useRef, useState } from 'react'
+import { Link } from '../lib/nav.jsx'
+import { useSeo } from '../lib/seo.js'
+import { Empty, ErrorBox, Loading } from './States.jsx'
+import NewsCard from './news/NewsCard.jsx'
+import { useArchive } from './news/useArchive.js'
 
-function navigate(hash) {
-  window.location.hash = hash
-  window.scrollTo(0, 0)
+const EMPTY_ARCHIVE = "Arxiv hozircha bo'sh — yangiliklarni ochsangiz, ular shu yerga saqlanadi."
+const QUERY_MAX_LENGTH = 80
+
+function statusText({ total, items, loading }) {
+  if (total === null) return loading ? 'Arxiv yuklanmoqda' : ''
+  return `${total} ta maqola topildi, ${items.length} tasi ko'rsatilmoqda`
 }
 
-function Card({ a }) {
-  const to = `/news/${a.slug}`
-  const open = (e) => { e.preventDefault(); navigate(to) }
+function CategoryFilter({ categories, value, onChange }) {
+  const button = (name, label, count) => (
+    <button
+      key={name || '__all'}
+      type="button"
+      className={`arch-cat${value === name ? ' is-sel' : ''}`}
+      aria-pressed={value === name}
+      onClick={() => onChange(name)}
+    >
+      {label} {count != null && <span className="arch-cat__n">{count}</span>}
+    </button>
+  )
   return (
-    <article className="nw-card">
-      <a className="nw-card__media" href={`#${to}`} onClick={open}>
-        {a.image
-          ? <img className="nw-card__img" src={a.image} alt="" loading="lazy" />
-          : <span className="nw-card__noimg">eSCORE</span>}
-        {a.league && <span className="nw-card__league">{a.league}</span>}
-      </a>
-      <div className="nw-card__body">
-        <a href={`#${to}`} onClick={open} className="nw-card__title">{a.title}</a>
-        {a.subtitle && <p className="nw-card__sub">{a.subtitle}</p>}
-        <div className="nw-card__meta">
-          <span>{a.hasFull ? 'To‘liq maqola' : 'Qisqacha'}</span>
-          <span>{a.time}</span>
-        </div>
+    <div className="arch-cats" role="group" aria-label="Kategoriya bo'yicha filtr">
+      {button('', 'Hammasi')}
+      {categories.map(c => button(c.name, c.name, c.count))}
+    </div>
+  )
+}
+
+function EmptyResult({ query, category }) {
+  if (!query && !category) return <Empty>{EMPTY_ARCHIVE}</Empty>
+  return <Empty>{query ? `“${query}” bo'yicha maqola topilmadi.` : 'Bu kategoriyada maqola topilmadi.'}</Empty>
+}
+
+/**
+ * "Yana yuklash": tugma yuklanish paytida fokusni yo'qotmasligi uchun `aria-disabled` (disabled emas);
+ * yangi sahifa kelgach fokus birinchi yangi kartochka sarlavhasiga o'tadi.
+ */
+function useLoadMoreFocus(items, loadMore) {
+  const gridRef = useRef(null)
+  const pendingIndex = useRef(null)
+  useEffect(() => {
+    const idx = pendingIndex.current
+    if (idx === null || items.length <= idx) return
+    pendingIndex.current = null
+    gridRef.current?.querySelectorAll('.nw-card__title')[idx]?.focus()
+  }, [items.length])
+  const onLoadMore = () => {
+    pendingIndex.current = items.length
+    loadMore()
+  }
+  return { gridRef, onLoadMore }
+}
+
+function Results({ arch, category }) {
+  const { items, error, loading, hasMore, reload, loadMore } = arch
+  const { gridRef, onLoadMore } = useLoadMoreFocus(items, loadMore)
+  if (items.length === 0) {
+    if (error) return <ErrorBox error={error} onRetry={reload} />
+    if (loading) return <Loading label="Arxiv yuklanmoqda…" />
+    return <EmptyResult query={arch.query} category={category} />
+  }
+  return (
+    <>
+      <div className="nw-grid" ref={gridRef}>
+        {items.map(a => (
+          <NewsCard key={a.slug} item={a} meta={[a.hasFull ? 'To‘liq maqola' : 'Qisqacha', a.time]} />
+        ))}
       </div>
-    </article>
+      {error && <ErrorBox error={error} onRetry={reload} title="Keyingi sahifani yuklab bo'lmadi" />}
+      {hasMore && !error && (
+        <button type="button" className="arch-more" onClick={onLoadMore} aria-disabled={loading} aria-busy={loading}>
+          {loading ? 'Yuklanmoqda…' : 'Yana yuklash'}
+        </button>
+      )}
+    </>
   )
 }
 
 export default function Archive() {
   const [q, setQ] = useState('')
   const [category, setCategory] = useState('')
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  // qidiruv/kategoriya o'zgarsa — 300ms debounce bilan yuklash
-  useEffect(() => {
-    let alive = true
-    setLoading(true)
-    const t = setTimeout(() => {
-      api.archive({ q, category })
-        .then((d) => { if (alive) { setData(d); setLoading(false) } })
-        .catch(() => { if (alive) setLoading(false) })
-    }, 300)
-    return () => { alive = false; clearTimeout(t) }
-  }, [q, category])
-
-  const items = data?.items || []
-  const categories = data?.categories || []
+  const arch = useArchive(q, category)
+  useSeo({
+    title: 'Maqolalar arxivi',
+    description: "eSCORE arxivi: saytda e'lon qilingan futbol maqolalari — sarlavha yoki matn bo'yicha qidiring.",
+    path: '/archive',
+  })
 
   return (
     <section className="nw arch">
       <header className="nw-head">
-        <a href="#/news" onClick={(e) => { e.preventDefault(); navigate('/news') }} className="article__back">
+        <Link to="/news" className="article__back">
           ← Yangiliklar
-        </a>
+        </Link>
         <p className="kicker">ARXIV · QIDIRUV</p>
         <h1 className="score__title">Maqolalar arxivi</h1>
         <p className="score__standfirst">
-          Saytda ko'rilgan barcha maqolalar shu yerda saqlanadi — sarlavha yoki matn
-          bo'yicha qidiring{data ? ` (${data.total} ta maqola)` : ''}.
+          Saytda ko'rilgan barcha maqolalar shu yerda saqlanadi — sarlavha yoki matn bo'yicha qidiring
+          {arch.total !== null ? ` (${arch.total} ta maqola)` : ''}.
         </p>
       </header>
 
@@ -70,40 +113,18 @@ export default function Archive() {
           className="sc-search arch-search"
           type="search"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={e => setQ(e.target.value)}
           placeholder="Maqola qidirish (sarlavha yoki matn)…"
           aria-label="Arxivdan qidirish"
+          maxLength={QUERY_MAX_LENGTH}
         />
-        <div className="arch-cats">
-          <button
-            className={`arch-cat${category === '' ? ' is-sel' : ''}`}
-            onClick={() => setCategory('')}
-          >
-            Hammasi
-          </button>
-          {categories.map((c) => (
-            <button
-              key={c.name}
-              className={`arch-cat${category === c.name ? ' is-sel' : ''}`}
-              onClick={() => setCategory(c.name)}
-            >
-              {c.name} <span className="arch-cat__n">{c.count}</span>
-            </button>
-          ))}
-        </div>
+        <CategoryFilter categories={arch.categories} value={category} onChange={setCategory} />
       </div>
 
-      {loading && !data ? (
-        <Loading />
-      ) : items.length === 0 ? (
-        <p className="sc-empty">
-          {q ? `“${q}” bo'yicha maqola topilmadi.` : 'Arxiv hozircha bo\'sh — yangiliklarni ochsangiz, ular shu yerga saqlanadi.'}
-        </p>
-      ) : (
-        <div className="nw-grid">
-          {items.map((a) => <Card key={a.slug} a={a} />)}
-        </div>
-      )}
+      <p className="sr-only" role="status" aria-live="polite">
+        {statusText(arch)}
+      </p>
+      <Results arch={arch} category={category} />
     </section>
   )
 }
